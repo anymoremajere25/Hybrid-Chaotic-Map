@@ -1,1 +1,115 @@
+# Step 1: Imports
+import numpy as np
+import hashlib
+from google.colab import files
+
+# Step 2: Define the composite chaos function
+def dyadic_tent_map(x, r=0.9):
+    """
+    Composite function h(x) = dyadic(tent(x)).
+    Assumes 0 < x < 1 and r ≥ 0.6 for chaotic behavior.
+    """
+    if x <= 0.5:
+        rx = r * x
+        return 2 * rx if rx < 0.5 else 2 * rx - 1
+    else:
+        r1x = r * (1 - x)
+        return 2 * r1x if r1x < 0.5 else 2 * r1x - 1
+
+# Step 3: Generate the raw keystream (without whitening yet)
+def generate_keystream(num_bytes, x0=0.612345, r=1.999, warmup=5000):
+    x = x0
+    keystream = []
+
+    # Warm-up phase
+    for _ in range(warmup):
+        x = dyadic_tent_map(x, r)
+
+    # Generate keystream
+    for _ in range(num_bytes):
+        x = dyadic_tent_map(x, r)
+        keystream.append(int(x * 256) % 256)
+
+    return np.array(keystream, dtype=np.uint8)
+
+# Step 4: SHA-256 Whitening
+def sha256_whitening(raw_bytes, chunk_size=32):
+    output = bytearray()
+    for i in range(0, len(raw_bytes), chunk_size):
+        chunk = raw_bytes[i:i+chunk_size]
+        hashed = hashlib.sha256(chunk).digest()
+        output.extend(hashed)
+    return output[:len(raw_bytes)]
+
+# Step 5: Generate and whiten (4 MB stream)
+num_bytes = 4 * 1024 * 1024  # 4 MB
+raw_keystream = generate_keystream(num_bytes)
+whitened_keystream = sha256_whitening(raw_keystream)
+
+# Step 6: Save keystream to file
+filename = "keystream_composite_dyadic_tent_4MB_whitened.bin"
+with open(filename, "wb") as f:
+    f.write(whitened_keystream)
+
+print(f"✅ {filename} saved!")
+
+# Step 7: Download the file
+files.download(filename)
+# Step 1: Imports
+import numpy as np
+import hashlib
+from google.colab import files
+
+# Step 2: Define the composite chaos function
+def dyadic_tent_map(x, r=0.9):
+    """
+    Composite function h(x) = dyadic(tent(x)).
+    Assumes 0 < x < 1 and r ≥ 0.6 for chaotic behavior.
+    """
+    if x <= 0.5:
+        rx = r * x
+        return 2 * rx if rx < 0.5 else 2 * rx - 1
+    else:
+        r1x = r * (1 - x)
+        return 2 * r1x if r1x < 0.5 else 2 * r1x - 1
+
+# Step 3: Generate the raw keystream (without whitening yet)
+def generate_keystream(num_bytes, x0=0.612345, r=1.999, warmup=5000):
+    x = x0
+    keystream = []
+
+    # Warm-up phase
+    for _ in range(warmup):
+        x = dyadic_tent_map(x, r)
+
+    # Generate keystream
+    for _ in range(num_bytes):
+        x = dyadic_tent_map(x, r)
+        keystream.append(int(x * 256) % 256)
+
+    return np.array(keystream, dtype=np.uint8)
+
+# Step 4: SHA-256 Whitening
+def sha256_whitening(raw_bytes, chunk_size=32):
+    output = bytearray()
+    for i in range(0, len(raw_bytes), chunk_size):
+        chunk = raw_bytes[i:i+chunk_size]
+        hashed = hashlib.sha256(chunk).digest()
+        output.extend(hashed)
+    return output[:len(raw_bytes)]
+
+# Step 5: Generate and whiten (4 MB stream)
+num_bytes = 4 * 1024 * 1024  # 4 MB
+raw_keystream = generate_keystream(num_bytes)
+whitened_keystream = sha256_whitening(raw_keystream)
+
+# Step 6: Save keystream to file
+filename = "keystream_composite_dyadic_tent_4MB_whitened.bin"
+with open(filename, "wb") as f:
+    f.write(whitened_keystream)
+
+print(f"✅ {filename} saved!")
+
+# Step 7: Download the file
+files.download(filename)
 
