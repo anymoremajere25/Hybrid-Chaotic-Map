@@ -1,1 +1,72 @@
+from PIL import Image
+import numpy as np
+import matplotlib.pyplot as plt
+from google.colab import files
+import time
+import pandas as pd
+import io
+
+# 📤 Step 1: Upload images
+uploaded = files.upload()
+
+# 📦 Step 2: Load keystream (upload beforehand)
+with open("keystream_composite_dyadic_tent_4MB_whitened.bin") as f:
+    keystream = np.frombuffer(f.read(), dtype=np.uint8)
+
+# 📊 Step 3: Runtime measurement function
+def xor_encrypt_decrypt(img, keystream, offset=0):
+    img_array = np.array(img)
+    flat = img_array.flatten()
+    ks_segment = keystream[offset:offset + len(flat)]
+    encrypted_flat = np.bitwise_xor(flat, ks_segment)
+    decrypted_flat = np.bitwise_xor(encrypted_flat, ks_segment)
+    enc_img = encrypted_flat.reshape(img_array.shape).astype(np.uint8)
+    dec_img = decrypted_flat.reshape(img_array.shape).astype(np.uint8)
+    return enc_img, dec_img
+
+# 📋 Step 4: Loop and measure
+results = []
+offset = 0
+idx = 1
+
+for fname in uploaded:
+    for mode in ['L', 'RGB']:  # Grayscale and RGB
+        img = Image.open(io.BytesIO(uploaded[fname])).convert(mode)
+        img_np = np.array(img)
+        color_mode = 'Grayscale' if mode == 'L' else 'RGB'
+        img_size_str = f"{img_np.shape[1]} x {img_np.shape[0]}"  # width x height
+
+        flat_len = img_np.size
+
+        start_enc = time.time()
+        enc, _ = xor_encrypt_decrypt(img, keystream, offset)
+        end_enc = time.time()
+
+        start_dec = time.time()
+        _, dec = xor_encrypt_decrypt(img, keystream, offset)
+        end_dec = time.time()
+
+        enc_time = end_enc - start_enc
+        dec_time = end_dec - start_dec
+
+        results.append([
+            idx,
+            fname,
+            img_size_str,
+            color_mode,
+            f"{enc_time:.5f}",
+            f"{dec_time:.5f}"
+        ])
+        idx += 1
+        offset += flat_len
+
+# 📊 Step 5: Display as DataFrame
+df = pd.DataFrame(results, columns=[
+    "No.", "Image", "Image Size", "Color Mode", "Encryption Time (s)", "Decryption Time (s)"
+])
+df.style.set_properties(**{'text-align': 'center'})
+display(df)
+
+# 💾 Optional: Save to CSV
+df.to_csv("encryption_decryption_runtime_results.csv", index=False)
 
