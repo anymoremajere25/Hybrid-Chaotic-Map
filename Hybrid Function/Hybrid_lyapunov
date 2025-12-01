@@ -1,0 +1,63 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ========== MAP DEFINITIONS ==========
+
+def tent_map(x, r):
+    x = np.asarray(x)
+    return np.where(x <= 0.5, r * x, r * (1.0 - x))
+
+def dyadic_map(y):
+    return (2.0 * y) % 1.0
+
+def hybrid_map(x, r):
+    return dyadic_map(tent_map(x, r))
+
+def hybrid_derivative(x, r):
+    tent_prime = np.where(x <= 0.5, r, -r)
+    dyadic_prime = 2.0
+    return dyadic_prime * tent_prime
+
+
+# ========== LYAPUNOV COMPUTATION FUNCTION ==========
+
+def lyapunov_exponent(r, x0=0.5, n_transient=1000, n_iter=2000):
+    x = x0
+
+    # burn-in
+    for _ in range(n_transient):
+        x = hybrid_map(x, r)
+
+    sum_lyap = 0.0
+    count = 0
+
+    for _ in range(n_iter):
+        dh = hybrid_derivative(x, r)
+        if abs(dh) > 1e-12:
+            sum_lyap += np.log(abs(dh))
+            count += 1
+        x = hybrid_map(x, r)
+
+    return sum_lyap / count if count > 0 else np.nan
+
+
+# ========== SWEEP r AND PLOT ==========
+
+r_min, r_max = 0.1, 2.0
+num_r = 300
+
+r_vals = np.linspace(r_min, r_max, num_r)
+lyap_vals = np.zeros_like(r_vals)
+
+for i, r in enumerate(r_vals):
+    lyap_vals[i] = lyapunov_exponent(r, x0=0.4321)
+
+plt.figure(figsize=(6,4))
+plt.plot(r_vals, lyap_vals, color="lime", linewidth=2)   # ← LIME COLOR
+plt.axhline(0, linestyle="--", linewidth=1, color="red")
+plt.title("Lyapunov Exponent Diagram for h(x) = dyadic(tent_r(x))")
+plt.xlabel("r")
+plt.ylabel("Lyapunov Exponent")
+plt.xlim(r_min, r_max)
+plt.tight_layout()
+plt.show()
