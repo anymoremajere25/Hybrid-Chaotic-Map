@@ -1,0 +1,15 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Tent map with control parameter r
+def tent_map(x, r):
+    x = np.asarray(x)
+    return np.where(x <= 0.5, r * x, r * (1.0 - x))
+
+# Dyadic map
+def dyadic_map(y):
+    return (2.0 * y) % 1.0
+
+# Hybrid (composite) map: h(x) = dyadic(tent_r(x))
+def hybrid_map(x, r):
+    return dyadic_map(tent_map(x, r))
