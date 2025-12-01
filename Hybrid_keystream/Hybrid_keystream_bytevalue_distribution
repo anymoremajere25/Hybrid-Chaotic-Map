@@ -1,0 +1,100 @@
+# ============================================
+# Composite Map Keystream Distribution Test
+# ============================================
+
+import numpy as np
+import matplotlib.pyplot as plt
+from google.colab import files
+
+# Optional: chi-square p-value (needs scipy)
+try:
+    from scipy.stats import chi2
+    SCIPY_AVAILABLE = True
+except ImportError:
+    SCIPY_AVAILABLE = False
+    print("SciPy not found. Chi-square p-value will not be computed.")
+
+# -----------------------------
+# 1. Upload keystream file
+# -----------------------------
+print("📂 Please upload your keystream file (e.g. keystream_composite_dyadic_tent_4MB_whitened.bin)")
+uploaded = files.upload()
+
+# Take the first uploaded file
+filename = list(uploaded.keys())[0]
+print(f"✅ File uploaded: {filename}")
+
+# -----------------------------
+# 2. Load bytes into NumPy
+# -----------------------------
+with open(filename, "rb") as f:
+    data = f.read()
+
+keystream = np.frombuffer(data, dtype=np.uint8)
+N = keystream.size
+
+print(f"Total bytes in keystream: {N}")
+print("First 16 bytes:", keystream[:16])
+
+# -----------------------------
+# 3. Byte distribution analysis
+# -----------------------------
+counts = np.bincount(keystream, minlength=256)
+probs = counts / N
+
+# Basic stats
+mean_val = keystream.mean()
+var_val = keystream.var()
+nonzero_probs = probs[probs > 0]
+entropy_bits = -np.sum(nonzero_probs * np.log2(nonzero_probs))
+
+print("\n--- Basic Statistics ---")
+print(f"Mean byte value       : {mean_val:.4f} (ideal ≈ 127.5)")
+print(f"Variance of byte value: {var_val:.4f} (ideal ≈ 5461.25)")
+print(f"Shannon entropy       : {entropy_bits:.4f} bits (max = 8 bits)")
+
+# Chi-square test vs uniform distribution
+expected = N / 256.0
+chi2_stat = np.sum((counts - expected)**2 / expected)
+
+print("\n--- Chi-square Uniformity Test ---")
+print(f"Chi-square statistic  : {chi2_stat:.4f}")
+print(f"Degrees of freedom    : 255")
+
+if SCIPY_AVAILABLE:
+    p_value = 1 - chi2.cdf(chi2_stat, df=255)
+    print(f"p-value (approx)      : {p_value:.4e}")
+    if p_value > 0.05:
+        print("Interpretation        : Cannot reject uniformity at 5% level.")
+    else:
+        print("Interpretation        : Deviates significantly from ideal uniform at 5% level.")
+else:
+    print("Install SciPy to compute the p-value:")
+    print("  !pip install scipy")
+
+# -----------------------------
+# 4. Plot byte distribution
+# -----------------------------
+plt.figure(figsize=(8, 4))
+x_vals = np.arange(256)
+
+plt.bar(x_vals, counts, width=1.0, color="lime", edgecolor="black")
+plt.title("Composite Map Keystream: Byte Distribution (0–255)")
+plt.xlabel("Byte value")
+plt.ylabel("Frequency")
+plt.xlim(0, 255)
+plt.tight_layout()
+plt.show()
+
+# -----------------------------
+# 5. Bit-level balance (optional)
+# -----------------------------
+bits = np.unpackbits(keystream)
+num_bits = bits.size
+ones = bits.sum()
+zeros = num_bits - ones
+
+print("\n--- Bit-level Analysis (Optional) ---")
+print(f"Total bits : {num_bits}")
+print(f"Zeros      : {zeros} ({zeros/num_bits:.4%})")
+print(f"Ones       : {ones} ({ones/num_bits:.4%})")
