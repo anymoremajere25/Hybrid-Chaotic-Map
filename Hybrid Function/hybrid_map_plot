@@ -1,0 +1,16 @@
+# --- PARAMETERS ---
+r0 = 1.5     # example r to visualize h(x)
+
+# --- DATA FOR PLOT ---
+x = np.linspace(0.0, 1.0, 2000)
+y = hybrid_map(x, r0)
+
+plt.figure(figsize=(7, 4))
+plt.plot(x, y, linewidth=2, label=f"h(x) = dyadic(tent(x)), r = {r0}", color="orange")
+plt.title("Composite Map: h(x) = 2 * tent_r(x) mod 1")
+plt.xlabel("x")
+plt.ylabel("h(x)")
+plt.grid(True, linestyle="--", alpha=0.4)
+plt.legend()
+plt.tight_layout()
+plt.show()
