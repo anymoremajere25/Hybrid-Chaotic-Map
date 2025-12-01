@@ -5,9 +5,7 @@ This project implements a **Hybrid Chaotic Map** (composite Dyadic–Tent functi
 All experiments (keystream generation, encryption/decryption, histograms, correlation, MSE/PSNR, runtime, etc.), excluding NIST Tests are designed to be run **in Google Colab using Python**.
 
 ---
-
 ## 📂 Project Structure
-
 ```text
 Chaos-Hybrid-Encryption/
 ├── Hybrid Function/
