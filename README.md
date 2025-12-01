@@ -9,29 +9,42 @@ All experiments (keystream generation, encryption/decryption, histograms, correl
 ## 📂 Project Structure
 
 ```text
-src/
- ├── step_1_createCompositeKeystream.py
- ├── step_2_composite_encrypt_decrypt_gray.py
- ├── step_3_composite_encrypt_decrypt_rgb.py
- ├── step_4_histogram_analysis_code_rgb.py
- ├── step_5_histogram_analysis_code_gs.py
- ├── step_6_chisquare_test_gs.py
- ├── step_7_chisquare_test_rgb.py
- ├── step_8_scatterplots_gs.py
- ├── step_9_scatterplots_rgb.py
- ├── step_x10_pearson_correlation_rgb.py
- ├── step_x11_pearson_correlation_gs.py
- ├── step_x12_sensitivity_gs.py
- ├── step_x13_sensitivity_rgb.py
- ├── step_x14_mse_psnr_rgb.py
- ├── step_x15_mse_psnr_gs.py
- └── step_x16_runtime_annalysis.py
+Chaos-Hybrid-Encryption/
+├── Hybrid Function/
+│   ├── composite_function_definition.ipynb
+│   ├── hybrid_map_plot.ipynb
+│   ├── hybrid_bifurcation.ipynb
+│   ├── Hybrid_lyapunov.ipynb
+├── Hybrid_keystream/
+│   ├── Keystream_generation.ipynb
+│   ├── Hybrid_keystream_bytevalue_distribution.ipynb
+│   │   └── README.md
+│
+├── Resources/
+│   ├── Images
+│   │   
+│   └── README.md
+│
+├── src/
+│   ├── step_1_createCompositeKeystream.py
+│   ├── step_2_composite_encrypt_decrypt_gray.py
+│   ├── step_3_composite_encrypt_decrypt_rgb.py
+│   ├── step_4_histogram_analysis_code_rgb.py
+│   ├── step_5_histogram_analysis_code_gs.py
+│   ├── step_6_chisquare_test_gs.py
+│   ├── step_7_chisquare_test_rgb.py
+│   ├── step_8_scatterplots_gs.py
+│   ├── step_9_scatterplots_rgb.py
+│   ├── step_x10_pearson_correlation_rgb.py
+│   ├── step_x11_pearson_correlation_gs.py
+│   ├── step_x12_sensitivity_gs.py
+│   ├── step_x13_sensitivity_rgb.py
+│   ├── step_x14_mse_psnr_rgb.py
+│   ├── step_x15_mse_psnr_gs.py
+│   └── step_x16_runtime_annalysis.py
+│
+└── README.md   ← main project README
 
-resources/
- ├── images_link.txt      # Links to all images used in this study
- └── nist_test_kit.txt     # Link & notes for NIST SP 800-22 test suite
-
-README.md
 ```
 
 Most scripts are **step-by-step** and include comments explaining what each part does.
