@@ -1,0 +1,31 @@
+# --- PARAMETERS ---
+r_min, r_max = 0.1, 2.0
+num_r = 1000
+
+n_iter = 1500      # total iterations per r
+n_keep = 300       # how many last iterates to plot (after transients)
+
+r_vals = np.linspace(r_min, r_max, num_r)
+R = []
+X = []
+
+for r in r_vals:
+    x = 0.5  # initial condition (can be anything in (0,1))
+    for i in range(n_iter):
+        x = hybrid_map(x, r)
+        if i >= (n_iter - n_keep):
+            R.append(r)
+            X.append(x)
+
+R = np.array(R)
+X = np.array(X)
+
+plt.figure(figsize=(7, 4.5))
+plt.plot(R, X, ',', alpha=0.5, markersize=0.5, color="lime")
+plt.title("Bifurcation Diagram of h(x) = dyadic(tent_r(x))")
+plt.xlabel("r")
+plt.ylabel("x")
+plt.xlim(r_min, r_max)
+plt.ylim(0, 1)
+plt.tight_layout()
+plt.show()
