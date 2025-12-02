@@ -1,7 +1,3 @@
-Follow this link:  https://csrc.nist.gov/projects/random-bit-generation/documentation-and-software to download 
-the test kit(sts-2.1.2.zip)
-Follow prompts to Install and Setup
-Run the tests
 ## NIST Statistical Test Suite (STS)
 
 To run the NIST randomness tests on the generated keystreams, follow these steps:
