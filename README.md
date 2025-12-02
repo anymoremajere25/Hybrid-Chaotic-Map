@@ -201,9 +201,5 @@ Use this file as a guide to:
 
 ## 📘 Citation
 
-If you use this work in academic writing:
-
-please cite/ acknowledge
-```
 
 ---
